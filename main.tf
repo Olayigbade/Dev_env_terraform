@@ -88,6 +88,13 @@ resource "aws_instance" "dev_node" {
   tags = {
     name = "dev-node"
   }
-
+  provisioner "local-exec" {
+    command = templatefile("${var.host_os}-ssh-config.tpl", {
+      hostname = self.public_ip,
+      user = "ubuntu"
+      identityfile = "~/.ssh/service_terraform.pem"
+    })
+    interpreter = var.host_os == "windows" ? ["Powershell", "-Command"] : ["bash", "-c"]
+  }
 
 }
